@@ -99,15 +99,17 @@ using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+var context = services.GetRequiredService<ApplicationDbContext>();
 var logger = services.GetRequiredService<ILogger<Program>>();
 
 try
 {
+    await context.Database.MigrateAsync();
     await IdentityDataInitializer.SeedData(userManager,roleManager);
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "An error occured during seeding");
+    logger.LogError(ex, "An error occurred during seeding");
 }
 
 app.Run();
